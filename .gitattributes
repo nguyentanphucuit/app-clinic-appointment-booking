@@ -1,0 +1,40 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Flutter/Dart
+*.dart text
+*.yaml text
+*.yml text
+*.md text
+*.json text
+*.html text
+*.css text
+*.js text
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+
+# Fonts
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+
+# iOS
+*.pbxproj merge=union
+*.xcworkspacedata merge=union
+
+# Gradle wrapper should always use LF
+gradlew text eol=lf
+*.properties text eol=lf
+
