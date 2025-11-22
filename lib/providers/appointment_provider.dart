@@ -1,26 +1,28 @@
 import 'package:flutter/foundation.dart';
 import '../models/appointment.dart';
 import '../models/doctor.dart';
+import '../database/database_helper.dart';
 
 class AppointmentProvider with ChangeNotifier {
   List<Appointment> _appointments = [];
-  String _filterStatus = 'All';
+  String _filterStatus = 'Tất cả';
+  final DatabaseHelper _db = DatabaseHelper.instance;
 
   List<Appointment> get appointments => _appointments;
   String get filterStatus => _filterStatus;
 
   List<Appointment> get filteredAppointments {
-    if (_filterStatus == 'All') {
+    if (_filterStatus == 'Tất cả') {
       return _appointments;
-    } else if (_filterStatus == 'Upcoming') {
+    } else if (_filterStatus == 'Sắp tới') {
       return _appointments
           .where((a) => a.status == AppointmentStatus.upcoming)
           .toList();
-    } else if (_filterStatus == 'Completed') {
+    } else if (_filterStatus == 'Hoàn thành') {
       return _appointments
           .where((a) => a.status == AppointmentStatus.completed)
           .toList();
-    } else if (_filterStatus == 'Cancelled') {
+    } else if (_filterStatus == 'Đã hủy') {
       return _appointments
           .where((a) => a.status == AppointmentStatus.cancelled)
           .toList();
@@ -67,17 +69,24 @@ class AppointmentProvider with ChangeNotifier {
         .length;
   }
 
+  Future<void> loadAppointments() async {
+    _appointments = await _db.getAllAppointments();
+    notifyListeners();
+  }
+
   void setFilterStatus(String status) {
     _filterStatus = status;
     notifyListeners();
   }
 
-  void addAppointment(Appointment appointment) {
+  Future<void> addAppointment(Appointment appointment) async {
+    await _db.insertAppointment(appointment);
     _appointments.add(appointment);
     notifyListeners();
   }
 
-  void updateAppointment(String id, Appointment appointment) {
+  Future<void> updateAppointment(String id, Appointment appointment) async {
+    await _db.updateAppointment(appointment);
     final index = _appointments.indexWhere((a) => a.id == id);
     if (index != -1) {
       _appointments[index] = appointment;
@@ -85,32 +94,36 @@ class AppointmentProvider with ChangeNotifier {
     }
   }
 
-  void cancelAppointment(String id) {
+  Future<void> cancelAppointment(String id) async {
     final index = _appointments.indexWhere((a) => a.id == id);
     if (index != -1) {
-      _appointments[index] = _appointments[index].copyWith(
+      final updatedAppointment = _appointments[index].copyWith(
         status: AppointmentStatus.cancelled,
       );
+      await _db.updateAppointment(updatedAppointment);
+      _appointments[index] = updatedAppointment;
       notifyListeners();
     }
   }
 
-  void completeAppointment(String id, {String? notes, String? prescription}) {
+  Future<void> completeAppointment(String id, {String? notes, String? prescription}) async {
     final index = _appointments.indexWhere((a) => a.id == id);
     if (index != -1) {
-      _appointments[index] = _appointments[index].copyWith(
+      final updatedAppointment = _appointments[index].copyWith(
         status: AppointmentStatus.completed,
         notes: notes,
         prescription: prescription,
       );
+      await _db.updateAppointment(updatedAppointment);
+      _appointments[index] = updatedAppointment;
       notifyListeners();
     }
   }
 
-  void loadSampleAppointments(List<Doctor> doctors) {
+  Future<void> loadSampleAppointments(List<Doctor> doctors) async {
     if (doctors.isEmpty) return;
 
-    _appointments = [
+    final sampleAppointments = [
       Appointment(
         id: '1',
         doctor: doctors[0], // Dr. Sarah Johnson - Cardiology
@@ -171,6 +184,12 @@ class AppointmentProvider with ChangeNotifier {
         status: AppointmentStatus.upcoming,
       ),
     ];
+
+    // Insert all appointments into database
+    for (final appointment in sampleAppointments) {
+      await _db.insertAppointment(appointment);
+    }
+    _appointments = sampleAppointments;
     notifyListeners();
   }
 }

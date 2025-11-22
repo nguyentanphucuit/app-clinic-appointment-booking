@@ -33,7 +33,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
         backgroundColor: AppColors.surface,
         border: Border(bottom: BorderSide(color: AppColors.border, width: 0.5)),
         middle: Text(
-          'Find Doctors',
+          'Tìm bác sĩ',
           style: TextStyle(
             fontSize: AppConstants.fontL,
             fontWeight: FontWeight.w600,
@@ -49,7 +49,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
               padding: const EdgeInsets.all(AppConstants.paddingL),
               child: CupertinoSearchTextField(
                 controller: _searchController,
-                placeholder: 'Search doctors, specialties...',
+                placeholder: 'Tìm bác sĩ, chuyên khoa...',
                 style: const TextStyle(
                   fontSize: AppConstants.fontM,
                   color: AppColors.textPrimary,
@@ -68,7 +68,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
 
             // Specialty Filter
             SizedBox(
-              height: 50,
+              height: 36,
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppConstants.paddingL,
@@ -134,7 +134,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
               child: Row(
                 children: [
                   Text(
-                    'Found ${filteredDoctors.length} doctor${filteredDoctors.length != 1 ? 's' : ''}',
+                    'Tìm thấy ${filteredDoctors.length} bác sĩ',
                     style: const TextStyle(
                       fontSize: AppConstants.fontM,
                       fontWeight: FontWeight.w600,
@@ -161,7 +161,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
                           ),
                           const SizedBox(height: AppConstants.paddingM),
                           const Text(
-                            'No doctors found',
+                            'Không tìm thấy bác sĩ',
                             style: TextStyle(
                               fontSize: AppConstants.fontL,
                               fontWeight: FontWeight.w600,
@@ -170,7 +170,7 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
                           ),
                           const SizedBox(height: AppConstants.paddingS),
                           const Text(
-                            'Try adjusting your search or filters',
+                            'Thử điều chỉnh tìm kiếm hoặc bộ lọc',
                             style: TextStyle(
                               fontSize: AppConstants.fontM,
                               color: AppColors.textTertiary,
@@ -196,8 +196,8 @@ class _DoctorsScreenState extends State<DoctorsScreen> {
                               ),
                             );
                           },
-                          onFavorite: () {
-                            doctorProvider.toggleFavorite(doctor.id);
+                          onFavorite: () async {
+                            await doctorProvider.toggleFavorite(doctor.id);
                           },
                         );
                       },

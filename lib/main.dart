@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'providers/user_provider.dart';
 import 'providers/doctor_provider.dart';
 import 'providers/appointment_provider.dart';
@@ -10,7 +11,9 @@ import 'screens/profile_screen.dart';
 import 'utils/app_colors.dart';
 import 'utils/constants.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('vi_VN', null);
   runApp(const MyApp());
 }
 
@@ -27,8 +30,8 @@ class MyApp extends StatelessWidget {
       ],
       child: Builder(
         builder: (context) {
-          // Initialize sample appointments after providers are available
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+          // Initialize appointments after providers are available
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
             final doctorProvider = Provider.of<DoctorProvider>(
               context,
               listen: false,
@@ -38,16 +41,20 @@ class MyApp extends StatelessWidget {
               listen: false,
             );
 
+            // Load appointments from database
+            await appointmentProvider.loadAppointments();
+
+            // If no appointments, load sample data
             if (appointmentProvider.appointments.isEmpty &&
                 doctorProvider.doctors.isNotEmpty) {
-              appointmentProvider.loadSampleAppointments(
+              await appointmentProvider.loadSampleAppointments(
                 doctorProvider.doctors,
               );
             }
           });
 
           return const CupertinoApp(
-            title: 'Clinic Appointment',
+            title: 'Đặt lịch khám',
             debugShowCheckedModeBanner: false,
             theme: CupertinoThemeData(
               primaryColor: AppColors.primary,
@@ -86,10 +93,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   ];
 
   final List<_NavItem> _navItems = const [
-    _NavItem(icon: CupertinoIcons.house_fill, label: 'Home'),
-    _NavItem(icon: CupertinoIcons.person_2_fill, label: 'Doctors'),
-    _NavItem(icon: CupertinoIcons.calendar_today, label: 'Appointments'),
-    _NavItem(icon: CupertinoIcons.person_fill, label: 'Profile'),
+    _NavItem(icon: CupertinoIcons.house_fill, label: 'Trang chủ'),
+    _NavItem(icon: CupertinoIcons.person_2_fill, label: 'Bác sĩ'),
+    _NavItem(icon: CupertinoIcons.calendar_today, label: 'Lịch hẹn'),
+    _NavItem(icon: CupertinoIcons.person_fill, label: 'Hồ sơ'),
   ];
 
   @override

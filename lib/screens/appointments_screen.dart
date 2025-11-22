@@ -4,6 +4,7 @@ import '../providers/appointment_provider.dart';
 import '../widgets/appointment_card.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
+import 'doctor_detail_screen.dart';
 
 class AppointmentsScreen extends StatelessWidget {
   const AppointmentsScreen({super.key});
@@ -19,7 +20,7 @@ class AppointmentsScreen extends StatelessWidget {
         backgroundColor: AppColors.surface,
         border: Border(bottom: BorderSide(color: AppColors.border, width: 0.5)),
         middle: Text(
-          'My Appointments',
+          'Lịch hẹn của tôi',
           style: TextStyle(
             fontSize: AppConstants.fontL,
             fontWeight: FontWeight.w600,
@@ -37,37 +38,37 @@ class AppointmentsScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _FilterChip(
-                      label: 'All',
+                      label: 'Tất cả',
                       count: appointmentProvider.appointments.length,
-                      isSelected: appointmentProvider.filterStatus == 'All',
+                      isSelected: appointmentProvider.filterStatus == 'Tất cả',
                       onTap: () {
-                        appointmentProvider.setFilterStatus('All');
+                        appointmentProvider.setFilterStatus('Tất cả');
                       },
                     ),
                   ),
                   const SizedBox(width: AppConstants.paddingS),
                   Expanded(
                     child: _FilterChip(
-                      label: 'Upcoming',
+                      label: 'Sắp tới',
                       count: appointmentProvider.upcomingCount,
                       isSelected:
-                          appointmentProvider.filterStatus == 'Upcoming',
+                          appointmentProvider.filterStatus == 'Sắp tới',
                       color: AppColors.upcoming,
                       onTap: () {
-                        appointmentProvider.setFilterStatus('Upcoming');
+                        appointmentProvider.setFilterStatus('Sắp tới');
                       },
                     ),
                   ),
                   const SizedBox(width: AppConstants.paddingS),
                   Expanded(
                     child: _FilterChip(
-                      label: 'Completed',
+                      label: 'Hoàn thành',
                       count: appointmentProvider.completedCount,
                       isSelected:
-                          appointmentProvider.filterStatus == 'Completed',
+                          appointmentProvider.filterStatus == 'Hoàn thành',
                       color: AppColors.completed,
                       onTap: () {
-                        appointmentProvider.setFilterStatus('Completed');
+                        appointmentProvider.setFilterStatus('Hoàn thành');
                       },
                     ),
                   ),
@@ -89,7 +90,7 @@ class AppointmentsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: AppConstants.paddingM),
                           const Text(
-                            'No appointments found',
+                            'Không có lịch hẹn',
                             style: TextStyle(
                               fontSize: AppConstants.fontL,
                               fontWeight: FontWeight.w600,
@@ -98,7 +99,7 @@ class AppointmentsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: AppConstants.paddingS),
                           const Text(
-                            'Book an appointment with a doctor',
+                            'Đặt lịch hẹn với bác sĩ',
                             style: TextStyle(
                               fontSize: AppConstants.fontM,
                               color: AppColors.textTertiary,
@@ -138,36 +139,43 @@ class AppointmentsScreen extends StatelessWidget {
       context: context,
       builder: (context) => CupertinoActionSheet(
         title: const Text(
-          'Appointment Details',
+          'Chi tiết lịch hẹn',
           style: TextStyle(
             fontSize: AppConstants.fontL,
             fontWeight: FontWeight.w600,
           ),
         ),
         message: Text(
-          'Appointment with ${appointment.doctor.name}',
+          'Lịch hẹn với ${appointment.doctor.name}',
           style: const TextStyle(fontSize: AppConstants.fontM),
         ),
         actions: [
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => DoctorDetailScreen(
+                    doctor: appointment.doctor,
+                  ),
+                ),
+              );
             },
-            child: const Text('View Doctor Profile'),
+            child: const Text('Xem hồ sơ bác sĩ'),
           ),
           if (appointment.notes != null || appointment.prescription != null)
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('View Medical Records'),
+              child: const Text('Xem hồ sơ y tế'),
             ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Close'),
+          child: const Text('Đóng'),
         ),
       ),
     );
@@ -177,27 +185,27 @@ class AppointmentsScreen extends StatelessWidget {
     showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: const Text('Cancel Appointment'),
+        title: const Text('Hủy lịch hẹn'),
         content: const Text(
-          'Are you sure you want to cancel this appointment?',
+          'Bạn có chắc chắn muốn hủy lịch hẹn này?',
         ),
         actions: [
           CupertinoDialogAction(
-            child: const Text('No'),
+            child: const Text('Không'),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
-            onPressed: () {
-              Provider.of<AppointmentProvider>(
+            onPressed: () async {
+              await Provider.of<AppointmentProvider>(
                 context,
                 listen: false,
               ).cancelAppointment(appointmentId);
               Navigator.pop(context);
             },
-            child: const Text('Yes, Cancel'),
+            child: const Text('Có, hủy'),
           ),
         ],
       ),

@@ -35,8 +35,8 @@ class DoctorDetailScreen extends StatelessWidget {
         ),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
-          onPressed: () {
-            doctorProvider.toggleFavorite(doctor.id);
+          onPressed: () async {
+            await doctorProvider.toggleFavorite(doctor.id);
           },
           child: Icon(
             doctor.isFavorite
@@ -142,7 +142,7 @@ class DoctorDetailScreen extends StatelessWidget {
                               _buildStat(
                                 icon: CupertinoIcons.star_fill,
                                 value: Formatters.formatRating(doctor.rating),
-                                label: 'Rating',
+                                label: 'Đánh giá',
                                 color: AppColors.warning,
                               ),
                               _buildDivider(),
@@ -150,14 +150,14 @@ class DoctorDetailScreen extends StatelessWidget {
                                 icon: CupertinoIcons.person_2_fill,
                                 value:
                                     '${Formatters.formatReviewCount(doctor.reviewCount)}',
-                                label: 'Reviews',
+                                label: 'Đánh giá',
                                 color: AppColors.primary,
                               ),
                               _buildDivider(),
                               _buildStat(
                                 icon: CupertinoIcons.briefcase_fill,
                                 value: '${doctor.experience}',
-                                label: 'Years',
+                                label: 'Năm',
                                 color: AppColors.secondary,
                               ),
                             ],
@@ -175,7 +175,7 @@ class DoctorDetailScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'About',
+                            'Giới thiệu',
                             style: TextStyle(
                               fontSize: AppConstants.fontXL,
                               fontWeight: FontWeight.w700,
@@ -204,7 +204,7 @@ class DoctorDetailScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Details',
+                            'Chi tiết',
                             style: TextStyle(
                               fontSize: AppConstants.fontXL,
                               fontWeight: FontWeight.w700,
@@ -214,28 +214,28 @@ class DoctorDetailScreen extends StatelessWidget {
                           const SizedBox(height: AppConstants.paddingM),
                           _buildDetailItem(
                             icon: CupertinoIcons.building_2_fill,
-                            title: 'Hospital',
+                            title: 'Bệnh viện',
                             value: doctor.hospital,
                             color: AppColors.primary,
                           ),
                           const SizedBox(height: AppConstants.paddingM),
                           _buildDetailItem(
                             icon: CupertinoIcons.calendar,
-                            title: 'Available Days',
+                            title: 'Ngày làm việc',
                             value: doctor.availabilityText,
                             color: AppColors.secondary,
                           ),
                           const SizedBox(height: AppConstants.paddingM),
                           _buildDetailItem(
                             icon: CupertinoIcons.clock_fill,
-                            title: 'Working Hours',
+                            title: 'Giờ làm việc',
                             value: '${doctor.startTime} - ${doctor.endTime}',
                             color: AppColors.accent,
                           ),
                           const SizedBox(height: AppConstants.paddingM),
                           _buildDetailItem(
                             icon: CupertinoIcons.money_dollar_circle_fill,
-                            title: 'Consultation Fee',
+                            title: 'Phí khám',
                             value: Formatters.formatCurrency(
                               doctor.consultationFee,
                             ),
@@ -280,7 +280,7 @@ class DoctorDetailScreen extends StatelessWidget {
                       _showBookingSheet(context);
                     },
                     child: const Text(
-                      'Book Appointment',
+                      'Đặt lịch hẹn',
                       style: TextStyle(
                         fontSize: AppConstants.fontL,
                         fontWeight: FontWeight.w700,
@@ -395,14 +395,14 @@ class DoctorDetailScreen extends StatelessWidget {
       context: context,
       builder: (context) => CupertinoActionSheet(
         title: const Text(
-          'Book Appointment',
+          'Đặt lịch hẹn',
           style: TextStyle(
             fontSize: AppConstants.fontL,
             fontWeight: FontWeight.w600,
           ),
         ),
         message: Text(
-          'Select a date and time to book an appointment with ${doctor.name}',
+          'Chọn ngày và giờ để đặt lịch hẹn với ${doctor.name}',
           style: const TextStyle(fontSize: AppConstants.fontM),
         ),
         actions: [
@@ -411,14 +411,14 @@ class DoctorDetailScreen extends StatelessWidget {
               Navigator.pop(context);
               _showDateTimePicker(context);
             },
-            child: const Text('Select Date & Time'),
+            child: const Text('Chọn ngày & giờ'),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Cancel'),
+          child: const Text('Hủy'),
         ),
       ),
     );
@@ -451,12 +451,12 @@ class DoctorDetailScreen extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     onPressed: () => Navigator.pop(context),
                     child: const Text(
-                      'Cancel',
+                      'Hủy',
                       style: TextStyle(color: AppColors.primary),
                     ),
                   ),
                   const Text(
-                    'Book Appointment',
+                    'Đặt lịch hẹn',
                     style: TextStyle(
                       fontSize: AppConstants.fontL,
                       fontWeight: FontWeight.w600,
@@ -474,7 +474,7 @@ class DoctorDetailScreen extends StatelessWidget {
                       );
                     },
                     child: const Text(
-                      'Book',
+                      'Đặt',
                       style: TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
@@ -494,7 +494,7 @@ class DoctorDetailScreen extends StatelessWidget {
                     const Padding(
                       padding: EdgeInsets.all(AppConstants.paddingL),
                       child: Text(
-                        'Select Date',
+                        'Chọn ngày',
                         style: TextStyle(
                           fontSize: AppConstants.fontL,
                           fontWeight: FontWeight.w600,
@@ -523,7 +523,7 @@ class DoctorDetailScreen extends StatelessWidget {
                       padding: EdgeInsets.symmetric(
                           horizontal: AppConstants.paddingL),
                       child: Text(
-                        'Select Time',
+                        'Chọn giờ',
                         style: TextStyle(
                           fontSize: AppConstants.fontL,
                           fontWeight: FontWeight.w600,
@@ -558,7 +558,7 @@ class DoctorDetailScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Reason for visit (optional)',
+                            'Lý do khám (tùy chọn)',
                             style: TextStyle(
                               fontSize: AppConstants.fontM,
                               fontWeight: FontWeight.w600,
@@ -569,7 +569,7 @@ class DoctorDetailScreen extends StatelessWidget {
                           CupertinoTextField(
                             controller: reasonController,
                             placeholder:
-                                'e.g., Regular checkup, Consultation...',
+                                'Ví dụ: Khám định kỳ, Tư vấn...',
                             padding:
                                 const EdgeInsets.all(AppConstants.paddingM),
                             decoration: BoxDecoration(
@@ -595,12 +595,12 @@ class DoctorDetailScreen extends StatelessWidget {
     );
   }
 
-  void _createAppointment(
+  Future<void> _createAppointment(
     BuildContext context,
     DateTime selectedDate,
     TimeOfDay selectedTime,
     String reason,
-  ) {
+  ) async {
     final appointmentProvider = Provider.of<AppointmentProvider>(
       context,
       listen: false,
@@ -617,16 +617,17 @@ class DoctorDetailScreen extends StatelessWidget {
 
     // Check if the selected time is in the past
     if (appointmentDateTime.isBefore(DateTime.now())) {
-      _showErrorDialog(context, 'Please select a future date and time.');
+      _showErrorDialog(context, 'Vui lòng chọn ngày và giờ trong tương lai.');
       return;
     }
 
     // Check if doctor is available on the selected day
     final dayName = _getDayName(appointmentDateTime.weekday);
+    final dayNameVN = _getDayNameVN(appointmentDateTime.weekday);
     if (!doctor.availableDays.contains(dayName)) {
       _showErrorDialog(
         context,
-        'Dr. ${doctor.name} is not available on ${dayName}s.',
+        'Bác sĩ ${doctor.name} không làm việc vào ${dayNameVN}.',
       );
       return;
     }
@@ -638,7 +639,7 @@ class DoctorDetailScreen extends StatelessWidget {
         appointmentTime.compareTo(doctor.endTime) > 0) {
       _showErrorDialog(
         context,
-        'Please select a time between ${doctor.startTime} and ${doctor.endTime}.',
+        'Vui lòng chọn giờ trong khoảng ${doctor.startTime} và ${doctor.endTime}.',
       );
       return;
     }
@@ -649,12 +650,12 @@ class DoctorDetailScreen extends StatelessWidget {
       doctor: doctor,
       dateTime: appointmentDateTime,
       duration: '30 min',
-      reason: reason.isEmpty ? 'General consultation' : reason,
+      reason: reason.isEmpty ? 'Tư vấn chung' : reason,
       status: AppointmentStatus.upcoming,
     );
 
     // Add appointment to provider
-    appointmentProvider.addAppointment(newAppointment);
+    await appointmentProvider.addAppointment(newAppointment);
 
     // Close the picker
     Navigator.pop(context);
@@ -684,11 +685,32 @@ class DoctorDetailScreen extends StatelessWidget {
     }
   }
 
+  String _getDayNameVN(int weekday) {
+    switch (weekday) {
+      case 1:
+        return 'Thứ Hai';
+      case 2:
+        return 'Thứ Ba';
+      case 3:
+        return 'Thứ Tư';
+      case 4:
+        return 'Thứ Năm';
+      case 5:
+        return 'Thứ Sáu';
+      case 6:
+        return 'Thứ Bảy';
+      case 7:
+        return 'Chủ Nhật';
+      default:
+        return 'Thứ Hai';
+    }
+  }
+
   void _showErrorDialog(BuildContext context, String message) {
     showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: const Text('Error'),
+        title: const Text('Lỗi'),
         content: Text(message),
         actions: [
           CupertinoDialogAction(
@@ -704,9 +726,9 @@ class DoctorDetailScreen extends StatelessWidget {
     showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: const Text('Appointment Booked!'),
+        title: const Text('Đặt lịch thành công!'),
         content: Text(
-          'Your appointment with ${doctor.name} has been scheduled for ${Formatters.formatDate(appointmentDateTime)} at ${Formatters.formatTime(appointmentDateTime)}.',
+          'Lịch hẹn của bạn với ${doctor.name} đã được đặt vào ${Formatters.formatDate(appointmentDateTime)} lúc ${Formatters.formatTime(appointmentDateTime)}.',
         ),
         actions: [
           CupertinoDialogAction(

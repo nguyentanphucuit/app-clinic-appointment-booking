@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import '../models/doctor.dart';
+import '../database/database_helper.dart';
 
 class DoctorProvider with ChangeNotifier {
   List<Doctor> _doctors = [];
   String _searchQuery = '';
-  String _selectedSpecialty = 'All';
+  String _selectedSpecialty = 'Tất cả';
+  final DatabaseHelper _db = DatabaseHelper.instance;
 
   List<Doctor> get doctors => _doctors;
   String get searchQuery => _searchQuery;
@@ -25,7 +27,7 @@ class DoctorProvider with ChangeNotifier {
     }
 
     // Filter by specialty
-    if (_selectedSpecialty != 'All') {
+    if (_selectedSpecialty != 'Tất cả') {
       filtered = filtered.where((doctor) {
         return doctor.specialty == _selectedSpecialty;
       }).toList();
@@ -45,15 +47,23 @@ class DoctorProvider with ChangeNotifier {
   }
 
   DoctorProvider() {
-    _loadSampleDoctors();
+    _loadDoctors();
   }
 
-  void _loadSampleDoctors() {
+  Future<void> _loadDoctors() async {
+    _doctors = await _db.getAllDoctors();
+    if (_doctors.isEmpty) {
+      await _loadSampleDoctors();
+    }
+    notifyListeners();
+  }
+
+  Future<void> _loadSampleDoctors() async {
     _doctors = [
       Doctor(
         id: '1',
-        name: 'Dr. Sarah Johnson',
-        specialty: 'Cardiology',
+        name: 'BS. Nguyễn Thị Hương',
+        specialty: 'Tim mạch',
         avatar: 'https://i.pravatar.cc/150?img=47',
         rating: 4.9,
         reviewCount: 284,
@@ -61,7 +71,7 @@ class DoctorProvider with ChangeNotifier {
         hospital: 'City Medical Center',
         about:
             'Experienced cardiologist specializing in heart disease prevention and treatment. Board certified with extensive experience in cardiac care.',
-        availableDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+        availableDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         startTime: '09:00',
         endTime: '17:00',
         consultationFee: 500000,
@@ -69,8 +79,8 @@ class DoctorProvider with ChangeNotifier {
       ),
       Doctor(
         id: '2',
-        name: 'Dr. Michael Chen',
-        specialty: 'Dermatology',
+        name: 'BS. Trần Văn Minh',
+        specialty: 'Da liễu',
         avatar: 'https://i.pravatar.cc/150?img=33',
         rating: 4.8,
         reviewCount: 196,
@@ -85,8 +95,8 @@ class DoctorProvider with ChangeNotifier {
       ),
       Doctor(
         id: '3',
-        name: 'Dr. Emily Rodriguez',
-        specialty: 'Pediatrics',
+        name: 'BS. Lê Thị Mai',
+        specialty: 'Nhi khoa',
         avatar: 'https://i.pravatar.cc/150?img=45',
         rating: 4.9,
         reviewCount: 342,
@@ -102,8 +112,8 @@ class DoctorProvider with ChangeNotifier {
       ),
       Doctor(
         id: '4',
-        name: 'Dr. David Thompson',
-        specialty: 'Orthopedics',
+        name: 'BS. Phạm Đức Anh',
+        specialty: 'Chỉnh hình',
         avatar: 'https://i.pravatar.cc/150?img=15',
         rating: 4.7,
         reviewCount: 158,
@@ -118,8 +128,8 @@ class DoctorProvider with ChangeNotifier {
       ),
       Doctor(
         id: '5',
-        name: 'Dr. Lisa Anderson',
-        specialty: 'Neurology',
+        name: 'BS. Hoàng Thị Lan',
+        specialty: 'Thần kinh',
         avatar: 'https://i.pravatar.cc/150?img=48',
         rating: 4.8,
         reviewCount: 213,
@@ -134,8 +144,8 @@ class DoctorProvider with ChangeNotifier {
       ),
       Doctor(
         id: '6',
-        name: 'Dr. James Wilson',
-        specialty: 'General Practice',
+        name: 'BS. Vũ Văn Hùng',
+        specialty: 'Tổng quát',
         avatar: 'https://i.pravatar.cc/150?img=13',
         rating: 4.6,
         reviewCount: 428,
@@ -150,8 +160,8 @@ class DoctorProvider with ChangeNotifier {
       ),
       Doctor(
         id: '7',
-        name: 'Dr. Maria Garcia',
-        specialty: 'Psychiatry',
+        name: 'BS. Đỗ Thị Hoa',
+        specialty: 'Tâm thần',
         avatar: 'https://i.pravatar.cc/150?img=44',
         rating: 4.9,
         reviewCount: 167,
@@ -167,8 +177,8 @@ class DoctorProvider with ChangeNotifier {
       ),
       Doctor(
         id: '8',
-        name: 'Dr. Robert Lee',
-        specialty: 'Dentistry',
+        name: 'BS. Nguyễn Văn Tuấn',
+        specialty: 'Nha khoa',
         avatar: 'https://i.pravatar.cc/150?img=52',
         rating: 4.7,
         reviewCount: 295,
@@ -182,6 +192,11 @@ class DoctorProvider with ChangeNotifier {
         consultationFee: 300000,
       ),
     ];
+
+    // Insert all doctors into database
+    for (final doctor in _doctors) {
+      await _db.insertDoctor(doctor);
+    }
     notifyListeners();
   }
 
@@ -195,27 +210,29 @@ class DoctorProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleFavorite(String doctorId) {
+  Future<void> toggleFavorite(String doctorId) async {
     final index = _doctors.indexWhere((d) => d.id == doctorId);
     if (index != -1) {
+      final newFavoriteStatus = !_doctors[index].isFavorite;
+      await _db.toggleDoctorFavorite(doctorId, newFavoriteStatus);
       _doctors[index] = _doctors[index].copyWith(
-        isFavorite: !_doctors[index].isFavorite,
+        isFavorite: newFavoriteStatus,
       );
       notifyListeners();
     }
   }
 
-  Doctor? getDoctorById(String id) {
+  Future<Doctor?> getDoctorById(String id) async {
     try {
       return _doctors.firstWhere((doctor) => doctor.id == id);
     } catch (e) {
-      return null;
+      return await _db.getDoctor(id);
     }
   }
 
   List<String> get allSpecialties {
     final specialties = _doctors.map((d) => d.specialty).toSet().toList();
     specialties.sort();
-    return ['All', ...specialties];
+    return ['Tất cả', ...specialties];
   }
 }

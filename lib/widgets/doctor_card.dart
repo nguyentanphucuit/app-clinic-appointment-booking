@@ -19,20 +19,22 @@ class DoctorCard extends StatelessWidget {
 
   Color _getSpecialtyColor() {
     switch (doctor.specialty.toLowerCase()) {
-      case 'cardiology':
+      case 'tim mạch':
         return AppColors.cardiology;
-      case 'dermatology':
+      case 'da liễu':
         return AppColors.dermatology;
-      case 'neurology':
+      case 'thần kinh':
         return AppColors.neurology;
-      case 'pediatrics':
+      case 'nhi khoa':
         return AppColors.pediatrics;
-      case 'orthopedics':
+      case 'chỉnh hình':
         return AppColors.orthopedics;
-      case 'psychiatry':
+      case 'tâm thần':
         return AppColors.psychiatry;
-      case 'dentistry':
+      case 'nha khoa':
         return AppColors.dentistry;
+      case 'tổng quát':
+        return AppColors.general;
       default:
         return AppColors.general;
     }
@@ -179,7 +181,7 @@ class DoctorCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${doctor.experience} years',
+                          '${doctor.experience} năm',
                           style: const TextStyle(
                             fontSize: AppConstants.fontS,
                             color: AppColors.textSecondary,

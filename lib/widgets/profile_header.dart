@@ -121,11 +121,11 @@ class ProfileHeader extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildStatItem('Age', '${user.age} years'),
+                  _buildStatItem('Tuổi', '${user.age} tuổi'),
                   _buildDivider(),
-                  _buildStatItem('Blood Type', user.bloodType),
+                  _buildStatItem('Nhóm máu', user.bloodType),
                   _buildDivider(),
-                  _buildStatItem('Gender', user.gender),
+                  _buildStatItem('Giới tính', user.gender),
                 ],
               ),
               const SizedBox(height: AppConstants.paddingM),

@@ -5,6 +5,7 @@ import '../widgets/profile_header.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
 import '../utils/formatters.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -29,7 +30,11 @@ class ProfileScreen extends StatelessWidget {
             child: ProfileHeader(
               user: user,
               onEdit: () {
-                // Navigate to edit profile
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (context) => const EditProfileScreen(),
+                  ),
+                );
               },
             ),
           ),
@@ -42,7 +47,7 @@ class ProfileScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Personal Information',
+                    'Thông tin cá nhân',
                     style: TextStyle(
                       fontSize: AppConstants.fontXL,
                       fontWeight: FontWeight.w700,
@@ -52,7 +57,7 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: AppConstants.paddingM),
                   _buildInfoCard(
                     icon: CupertinoIcons.phone_fill,
-                    title: 'Phone',
+                    title: 'Điện thoại',
                     value: Formatters.formatPhoneNumber(user.phone),
                     color: AppColors.primary,
                   ),
@@ -66,14 +71,14 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: AppConstants.paddingM),
                   _buildInfoCard(
                     icon: CupertinoIcons.location_solid,
-                    title: 'Address',
+                    title: 'Địa chỉ',
                     value: user.address,
                     color: AppColors.accent,
                   ),
                   const SizedBox(height: AppConstants.paddingM),
                   _buildInfoCard(
                     icon: CupertinoIcons.calendar,
-                    title: 'Date of Birth',
+                    title: 'Ngày sinh',
                     value: Formatters.formatDate(user.dateOfBirth),
                     color: AppColors.info,
                   ),
@@ -91,7 +96,7 @@ class ProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Medical History',
+                      'Tiền sử bệnh',
                       style: TextStyle(
                         fontSize: AppConstants.fontXL,
                         fontWeight: FontWeight.w700,
@@ -172,7 +177,7 @@ class ProfileScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Settings',
+                    'Cài đặt',
                     style: TextStyle(
                       fontSize: AppConstants.fontXL,
                       fontWeight: FontWeight.w700,
@@ -182,27 +187,27 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: AppConstants.paddingM),
                   _buildSettingItem(
                     icon: CupertinoIcons.bell_fill,
-                    title: 'Notifications',
+                    title: 'Thông báo',
                     onTap: () {},
                   ),
                   _buildSettingItem(
                     icon: CupertinoIcons.lock_fill,
-                    title: 'Privacy & Security',
+                    title: 'Quyền riêng tư & Bảo mật',
                     onTap: () {},
                   ),
                   _buildSettingItem(
                     icon: CupertinoIcons.question_circle_fill,
-                    title: 'Help & Support',
+                    title: 'Trợ giúp & Hỗ trợ',
                     onTap: () {},
                   ),
                   _buildSettingItem(
                     icon: CupertinoIcons.info_circle_fill,
-                    title: 'About',
+                    title: 'Về ứng dụng',
                     onTap: () {},
                   ),
                   _buildSettingItem(
                     icon: CupertinoIcons.arrow_right_square_fill,
-                    title: 'Logout',
+                    title: 'Đăng xuất',
                     isDestructive: true,
                     onTap: () {},
                   ),

@@ -33,11 +33,31 @@ class Doctor {
 
   String get availabilityText {
     if (availableDays.length == 7) {
-      return 'Available every day';
+      return 'Có mặt mỗi ngày';
     } else if (availableDays.length >= 5) {
-      return 'Available weekdays';
+      return 'Có mặt các ngày trong tuần';
     } else {
-      return 'Available ${availableDays.join(", ")}';
+      final dayNames = availableDays.map((day) {
+        switch (day) {
+          case 'Mon':
+            return 'Thứ Hai';
+          case 'Tue':
+            return 'Thứ Ba';
+          case 'Wed':
+            return 'Thứ Tư';
+          case 'Thu':
+            return 'Thứ Năm';
+          case 'Fri':
+            return 'Thứ Sáu';
+          case 'Sat':
+            return 'Thứ Bảy';
+          case 'Sun':
+            return 'Chủ Nhật';
+          default:
+            return day;
+        }
+      }).toList();
+      return 'Có mặt ${dayNames.join(", ")}';
     }
   }
 

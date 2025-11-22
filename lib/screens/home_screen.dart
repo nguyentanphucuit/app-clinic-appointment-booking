@@ -22,45 +22,45 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Specialty> _specialties = [
     Specialty(
       id: '1',
-      name: 'Cardiology',
+      name: 'Tim mạch',
       icon: CupertinoIcons.heart_fill,
       doctorCount: 12,
-      description: 'Heart & cardiovascular care',
+      description: 'Chăm sóc tim & mạch máu',
     ),
     Specialty(
       id: '2',
-      name: 'Dermatology',
+      name: 'Da liễu',
       icon: CupertinoIcons.sparkles,
       doctorCount: 8,
-      description: 'Skin care specialists',
+      description: 'Chuyên khoa da',
     ),
     Specialty(
       id: '3',
-      name: 'Pediatrics',
+      name: 'Nhi khoa',
       icon: CupertinoIcons.smiley_fill,
       doctorCount: 15,
-      description: 'Child healthcare',
+      description: 'Chăm sóc trẻ em',
     ),
     Specialty(
       id: '4',
-      name: 'Neurology',
+      name: 'Thần kinh',
       icon: CupertinoIcons.bolt_fill,
       doctorCount: 10,
-      description: 'Brain & nervous system',
+      description: 'Não & hệ thần kinh',
     ),
     Specialty(
       id: '5',
-      name: 'Orthopedics',
+      name: 'Chỉnh hình',
       icon: CupertinoIcons.bandage_fill,
       doctorCount: 14,
-      description: 'Bone & joint care',
+      description: 'Chăm sóc xương & khớp',
     ),
     Specialty(
       id: '6',
-      name: 'Dentistry',
+      name: 'Nha khoa',
       icon: CupertinoIcons.heart_circle_fill,
       doctorCount: 11,
-      description: 'Dental care',
+      description: 'Chăm sóc răng miệng',
     ),
   ];
 
@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Welcome back,',
+                            'Chào mừng trở lại,',
                             style: TextStyle(
                               fontSize: AppConstants.fontM,
                               color: AppColors.textSecondary,
@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            user?.name ?? 'Guest',
+                            user?.name ?? 'Khách',
                             style: const TextStyle(
                               fontSize: AppConstants.fontXXL,
                               fontWeight: FontWeight.w700,
@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: StatsCard(
                         icon: CupertinoIcons.calendar_today,
-                        title: 'Upcoming',
+                        title: 'Sắp tới',
                         value: '${appointmentProvider.upcomingCount}',
                         color: AppColors.upcoming,
                       ),
@@ -154,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: StatsCard(
                         icon: CupertinoIcons.check_mark_circled_solid,
-                        title: 'Completed',
+                        title: 'Hoàn thành',
                         value: '${appointmentProvider.completedCount}',
                         color: AppColors.completed,
                       ),
@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   bottom: AppConstants.paddingM,
                 ),
                 child: const Text(
-                  'Specialties',
+                  'Chuyên khoa',
                   style: TextStyle(
                     fontSize: AppConstants.fontXL,
                     fontWeight: FontWeight.w700,
@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       const Text(
-                        'Today\'s Appointments',
+                        'Lịch hẹn hôm nay',
                         style: TextStyle(
                           fontSize: AppConstants.fontXL,
                           fontWeight: FontWeight.w700,
@@ -262,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Top Rated Doctors',
+                      'Bác sĩ được đánh giá cao',
                       style: TextStyle(
                         fontSize: AppConstants.fontXL,
                         fontWeight: FontWeight.w700,
@@ -275,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Navigate to all doctors
                       },
                       child: const Text(
-                        'See All',
+                        'Xem tất cả',
                         style: TextStyle(
                           fontSize: AppConstants.fontM,
                           fontWeight: FontWeight.w600,
@@ -306,8 +306,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     },
-                    onFavorite: () {
-                      doctorProvider.toggleFavorite(doctor.id);
+                    onFavorite: () async {
+                      await doctorProvider.toggleFavorite(doctor.id);
                     },
                   );
                 }, childCount: doctorProvider.topRatedDoctors.length),

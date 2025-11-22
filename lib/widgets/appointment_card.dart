@@ -31,11 +31,11 @@ class AppointmentCard extends StatelessWidget {
   String _getStatusText() {
     switch (appointment.status) {
       case AppointmentStatus.upcoming:
-        return 'Upcoming';
+        return 'Sắp tới';
       case AppointmentStatus.completed:
-        return 'Completed';
+        return 'Hoàn thành';
       case AppointmentStatus.cancelled:
-        return 'Cancelled';
+        return 'Đã hủy';
     }
   }
 
@@ -247,7 +247,7 @@ class AppointmentCard extends StatelessWidget {
                           ),
                           onPressed: onCancel,
                           child: const Text(
-                            'Cancel Appointment',
+                            'Hủy lịch hẹn',
                             style: TextStyle(
                               fontSize: AppConstants.fontM,
                               fontWeight: FontWeight.w600,

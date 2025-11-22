@@ -9,11 +9,11 @@ class Formatters {
 
   // Date formatters
   static String formatDate(DateTime date) {
-    return DateFormat('dd MMM yyyy').format(date);
+    return DateFormat('dd MMM yyyy', 'vi_VN').format(date);
   }
 
   static String formatDateShort(DateTime date) {
-    return DateFormat('dd MMM').format(date);
+    return DateFormat('dd MMM', 'vi_VN').format(date);
   }
 
   static String formatTime(DateTime date) {
@@ -21,7 +21,7 @@ class Formatters {
   }
 
   static String formatDateTime(DateTime date) {
-    return DateFormat('dd MMM yyyy, HH:mm').format(date);
+    return DateFormat('dd MMM yyyy, HH:mm', 'vi_VN').format(date);
   }
 
   static String formatDayOfWeek(DateTime date) {
@@ -37,14 +37,14 @@ class Formatters {
     final dateOnly = DateTime(date.year, date.month, date.day);
 
     if (dateOnly == today) {
-      return 'Today, ${formatTime(date)}';
+      return 'Hôm nay, ${formatTime(date)}';
     } else if (dateOnly == tomorrow) {
-      return 'Tomorrow, ${formatTime(date)}';
+      return 'Ngày mai, ${formatTime(date)}';
     } else if (dateOnly == yesterday) {
-      return 'Yesterday, ${formatTime(date)}';
+      return 'Hôm qua, ${formatTime(date)}';
     } else if (dateOnly.isAfter(today) &&
         dateOnly.isBefore(today.add(const Duration(days: 7)))) {
-      return '${formatDayOfWeek(date)}, ${formatTime(date)}';
+      return '${_formatDayOfWeekVN(date)}, ${formatTime(date)}';
     } else {
       return formatDateTime(date);
     }
@@ -69,5 +69,27 @@ class Formatters {
       return '${(count / 1000).toStringAsFixed(1)}k';
     }
     return count.toString();
+  }
+
+  // Vietnamese day of week formatter
+  static String _formatDayOfWeekVN(DateTime date) {
+    switch (date.weekday) {
+      case 1:
+        return 'Thứ Hai';
+      case 2:
+        return 'Thứ Ba';
+      case 3:
+        return 'Thứ Tư';
+      case 4:
+        return 'Thứ Năm';
+      case 5:
+        return 'Thứ Sáu';
+      case 6:
+        return 'Thứ Bảy';
+      case 7:
+        return 'Chủ Nhật';
+      default:
+        return 'Thứ Hai';
+    }
   }
 }

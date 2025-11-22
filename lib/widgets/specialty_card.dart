@@ -82,7 +82,7 @@ class SpecialtyCard extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                '${specialty.doctorCount} doctors',
+                '${specialty.doctorCount} bác sĩ',
                 style: TextStyle(
                   fontSize: 10,
                   color: isSelected
