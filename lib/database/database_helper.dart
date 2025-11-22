@@ -89,6 +89,7 @@ class DatabaseHelper {
         'id': user.id,
         'name': user.name,
         'email': user.email,
+        'password': user.password,
         'phone': user.phone,
         'avatar': user.avatar,
         'dateOfBirth': user.dateOfBirth.millisecondsSinceEpoch,
@@ -146,6 +147,7 @@ class DatabaseHelper {
       id: map['id'] as String,
       name: map['name'] as String,
       email: map['email'] as String,
+      password: map['password'] as String? ?? '', // Default empty nếu không có
       phone: map['phone'] as String,
       avatar: map['avatar'] as String,
       dateOfBirth: DateTime.fromMillisecondsSinceEpoch(map['dateOfBirth'] as int),

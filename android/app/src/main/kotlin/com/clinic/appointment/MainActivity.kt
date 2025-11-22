@@ -1,5 +1,6 @@
-package com.example.clinic_appointment_booking
+package com.clinic.appointment
 
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : FlutterActivity()
+

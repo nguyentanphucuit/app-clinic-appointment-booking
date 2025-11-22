@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import '../models/user.dart';
-import '../database/database_helper.dart';
+import '../services/firestore_service.dart';
 
 class UserProvider with ChangeNotifier {
   User? _currentUser;
-  final DatabaseHelper _db = DatabaseHelper.instance;
+  final FirestoreService _firestore = FirestoreService.instance;
 
   User? get currentUser => _currentUser;
 
@@ -13,7 +13,7 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> _loadUser() async {
-    _currentUser = await _db.getCurrentUser();
+    _currentUser = await _firestore.getCurrentUser();
     if (_currentUser == null) {
       await _loadSampleUser();
     }
@@ -25,6 +25,7 @@ class UserProvider with ChangeNotifier {
       id: '1',
       name: 'Nguyễn Văn Nam',
       email: 'nguyen.van.nam@email.com',
+      password: '123456', // Default password cho sample user
       phone: '0123456789',
       avatar: 'https://i.pravatar.cc/150?img=12',
       dateOfBirth: DateTime(1990, 5, 15),
@@ -37,12 +38,12 @@ class UserProvider with ChangeNotifier {
         'Regular checkups',
       ],
     );
-    await _db.insertUser(sampleUser);
+    await _firestore.createUser(sampleUser);
     _currentUser = sampleUser;
   }
 
   Future<void> updateUser(User user) async {
-    await _db.updateUser(user);
+    await _firestore.updateUser(user);
     _currentUser = user;
     notifyListeners();
   }
@@ -53,7 +54,9 @@ class UserProvider with ChangeNotifier {
     String? phone,
     String? address,
     DateTime? dateOfBirth,
+    String? gender,
     String? bloodType,
+    List<String>? medicalHistory,
   }) async {
     if (_currentUser != null) {
       final updatedUser = _currentUser!.copyWith(
@@ -62,11 +65,18 @@ class UserProvider with ChangeNotifier {
         phone: phone,
         address: address,
         dateOfBirth: dateOfBirth,
+        gender: gender,
         bloodType: bloodType,
+        medicalHistory: medicalHistory,
       );
-      await _db.updateUser(updatedUser);
+      await _firestore.updateUser(updatedUser);
       _currentUser = updatedUser;
       notifyListeners();
     }
+  }
+
+  Future<void> logout() async {
+    _currentUser = null;
+    notifyListeners();
   }
 }

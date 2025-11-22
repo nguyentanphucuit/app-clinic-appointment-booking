@@ -25,6 +25,10 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.8.3
   
+  # Firebase
+  firebase_core: ^2.24.2
+  cloud_firestore: ^4.13.6
+  
   # Icons
   flutter_svg: ^2.0.9
 

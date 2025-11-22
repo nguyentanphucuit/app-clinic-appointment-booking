@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import '../models/doctor.dart';
-import '../database/database_helper.dart';
+import '../services/firestore_service.dart';
 
 class DoctorProvider with ChangeNotifier {
   List<Doctor> _doctors = [];
   String _searchQuery = '';
   String _selectedSpecialty = 'Tất cả';
-  final DatabaseHelper _db = DatabaseHelper.instance;
+  final FirestoreService _firestore = FirestoreService.instance;
 
   List<Doctor> get doctors => _doctors;
   String get searchQuery => _searchQuery;
@@ -51,7 +51,7 @@ class DoctorProvider with ChangeNotifier {
   }
 
   Future<void> _loadDoctors() async {
-    _doctors = await _db.getAllDoctors();
+    _doctors = await _firestore.getAllDoctors();
     if (_doctors.isEmpty) {
       await _loadSampleDoctors();
     }
@@ -193,9 +193,9 @@ class DoctorProvider with ChangeNotifier {
       ),
     ];
 
-    // Insert all doctors into database
+    // Insert all doctors into Firestore
     for (final doctor in _doctors) {
-      await _db.insertDoctor(doctor);
+      await _firestore.createDoctor(doctor);
     }
     notifyListeners();
   }
@@ -214,7 +214,7 @@ class DoctorProvider with ChangeNotifier {
     final index = _doctors.indexWhere((d) => d.id == doctorId);
     if (index != -1) {
       final newFavoriteStatus = !_doctors[index].isFavorite;
-      await _db.toggleDoctorFavorite(doctorId, newFavoriteStatus);
+      await _firestore.toggleDoctorFavorite(doctorId, newFavoriteStatus);
       _doctors[index] = _doctors[index].copyWith(
         isFavorite: newFavoriteStatus,
       );
@@ -226,7 +226,7 @@ class DoctorProvider with ChangeNotifier {
     try {
       return _doctors.firstWhere((doctor) => doctor.id == id);
     } catch (e) {
-      return await _db.getDoctor(id);
+      return await _firestore.getDoctor(id);
     }
   }
 

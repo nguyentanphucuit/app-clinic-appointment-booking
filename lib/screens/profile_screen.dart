@@ -1,14 +1,61 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
+import '../providers/appointment_provider.dart';
 import '../widgets/profile_header.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
 import '../utils/formatters.dart';
 import 'edit_profile_screen.dart';
+import 'login_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  void _handleLogout(BuildContext context) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Đăng xuất'),
+        content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Hủy'),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            onPressed: () async {
+              Navigator.pop(context); // Đóng dialog
+              
+              // Clear user và appointments
+              final userProvider = Provider.of<UserProvider>(context, listen: false);
+              final appointmentProvider = Provider.of<AppointmentProvider>(context, listen: false);
+              
+              await userProvider.logout();
+              appointmentProvider.clearAppointments();
+              
+              // Navigate về login screen
+              if (mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  CupertinoPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                  (route) => false, // Xóa tất cả routes trước đó
+                );
+              }
+            },
+            child: const Text('Đăng xuất'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +256,7 @@ class ProfileScreen extends StatelessWidget {
                     icon: CupertinoIcons.arrow_right_square_fill,
                     title: 'Đăng xuất',
                     isDestructive: true,
-                    onTap: () {},
+                    onTap: () => _handleLogout(context),
                   ),
                 ],
               ),

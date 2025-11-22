@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
-import '../models/user.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
 import '../utils/formatters.dart';
@@ -22,6 +21,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String _selectedGender = 'Nam';
   String _selectedBloodType = 'O+';
   bool _isLoading = false;
+  List<String> _medicalHistory = [];
 
   final List<String> _bloodTypes = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
   final List<String> _genders = ['Nam', 'Nữ', 'Khác'];
@@ -38,6 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _selectedDate = user.dateOfBirth;
       _selectedGender = user.gender;
       _selectedBloodType = user.bloodType;
+      _medicalHistory = List<String>.from(user.medicalHistory);
     } else {
       _nameController = TextEditingController();
       _emailController = TextEditingController();
@@ -161,15 +162,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         phone: _phoneController.text.trim(),
         address: _addressController.text.trim(),
         dateOfBirth: _selectedDate,
+        gender: _selectedGender,
         bloodType: _selectedBloodType,
+        medicalHistory: _medicalHistory,
       );
-
-      // Update gender if needed
-      final currentUser = userProvider.currentUser;
-      if (currentUser != null && currentUser.gender != _selectedGender) {
-        final updatedUser = currentUser.copyWith(gender: _selectedGender);
-        await userProvider.updateUser(updatedUser);
-      }
 
       setState(() {
         _isLoading = false;
@@ -184,7 +180,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _isLoading = false;
       });
       if (mounted) {
-        _showErrorDialog('Có lỗi xảy ra khi cập nhật thông tin');
+        _showErrorDialog('Có lỗi xảy ra khi cập nhật thông tin: ${e.toString()}');
       }
     }
   }
@@ -328,9 +324,155 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   });
                 },
               ),
+              const SizedBox(height: AppConstants.paddingM),
+
+              // Medical History
+              _buildMedicalHistorySection(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildMedicalHistorySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Tiền sử bệnh',
+              style: TextStyle(
+                fontSize: AppConstants.fontM,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: _addMedicalHistory,
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    CupertinoIcons.add_circled,
+                    color: AppColors.primary,
+                    size: AppConstants.iconM,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    'Thêm',
+                    style: TextStyle(
+                      fontSize: AppConstants.fontM,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppConstants.paddingS),
+        if (_medicalHistory.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(AppConstants.paddingM),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppConstants.radiusM),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: const Text(
+              'Chưa có tiền sử bệnh',
+              style: TextStyle(
+                fontSize: AppConstants.fontM,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          )
+        else
+          ..._medicalHistory.asMap().entries.map((entry) {
+            final index = entry.key;
+            final history = entry.value;
+            return Container(
+              margin: const EdgeInsets.only(bottom: AppConstants.paddingS),
+              padding: const EdgeInsets.all(AppConstants.paddingM),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(AppConstants.radiusM),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      history,
+                      style: const TextStyle(
+                        fontSize: AppConstants.fontM,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      setState(() {
+                        _medicalHistory.removeAt(index);
+                      });
+                    },
+                    child: const Icon(
+                      CupertinoIcons.delete,
+                      color: AppColors.error,
+                      size: AppConstants.iconM,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+      ],
+    );
+  }
+
+  void _addMedicalHistory() {
+    final controller = TextEditingController();
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Thêm tiền sử bệnh'),
+        content: Padding(
+          padding: const EdgeInsets.only(top: AppConstants.paddingM),
+          child: CupertinoTextField(
+            controller: controller,
+            placeholder: 'Nhập tiền sử bệnh',
+            padding: const EdgeInsets.all(AppConstants.paddingM),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppConstants.radiusM),
+              border: Border.all(color: AppColors.border),
+            ),
+          ),
+        ),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Hủy'),
+          ),
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () {
+              if (controller.text.trim().isNotEmpty) {
+                setState(() {
+                  _medicalHistory.add(controller.text.trim());
+                });
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Thêm'),
+          ),
+        ],
       ),
     );
   }

@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import '../models/appointment.dart';
 import '../models/doctor.dart';
-import '../database/database_helper.dart';
+import '../services/firestore_service.dart';
+import '../providers/user_provider.dart';
 
 class AppointmentProvider with ChangeNotifier {
   List<Appointment> _appointments = [];
   String _filterStatus = 'Tất cả';
-  final DatabaseHelper _db = DatabaseHelper.instance;
+  final FirestoreService _firestore = FirestoreService.instance;
+  UserProvider? _userProvider;
 
   List<Appointment> get appointments => _appointments;
   String get filterStatus => _filterStatus;
@@ -69,9 +71,32 @@ class AppointmentProvider with ChangeNotifier {
         .length;
   }
 
-  Future<void> loadAppointments() async {
-    _appointments = await _db.getAllAppointments();
+  void setUserProvider(UserProvider userProvider) {
+    _userProvider = userProvider;
+  }
+
+  void clearAppointments() {
+    _appointments = [];
     notifyListeners();
+  }
+
+  Future<void> loadAppointments() async {
+    try {
+      final userId = _userProvider?.currentUser?.id;
+      if (userId != null) {
+        // Load appointments của user hiện tại
+        _appointments = await _firestore.getUserAppointments(userId);
+      } else {
+        // Fallback: load tất cả nếu chưa có user
+        _appointments = await _firestore.getAllAppointments();
+      }
+      notifyListeners();
+    } catch (e) {
+      // Nếu có lỗi (ví dụ: chưa có index trong Firestore), set empty list
+      _appointments = [];
+      notifyListeners();
+      rethrow; // Re-throw để caller biết có lỗi
+    }
   }
 
   void setFilterStatus(String status) {
@@ -80,13 +105,17 @@ class AppointmentProvider with ChangeNotifier {
   }
 
   Future<void> addAppointment(Appointment appointment) async {
-    await _db.insertAppointment(appointment);
+    final userId = _userProvider?.currentUser?.id;
+    if (userId == null) {
+      throw Exception('User not logged in');
+    }
+    await _firestore.createAppointment(appointment, userId);
     _appointments.add(appointment);
     notifyListeners();
   }
 
   Future<void> updateAppointment(String id, Appointment appointment) async {
-    await _db.updateAppointment(appointment);
+    await _firestore.updateAppointment(appointment);
     final index = _appointments.indexWhere((a) => a.id == id);
     if (index != -1) {
       _appointments[index] = appointment;
@@ -100,7 +129,7 @@ class AppointmentProvider with ChangeNotifier {
       final updatedAppointment = _appointments[index].copyWith(
         status: AppointmentStatus.cancelled,
       );
-      await _db.updateAppointment(updatedAppointment);
+      await _firestore.updateAppointment(updatedAppointment);
       _appointments[index] = updatedAppointment;
       notifyListeners();
     }
@@ -114,7 +143,7 @@ class AppointmentProvider with ChangeNotifier {
         notes: notes,
         prescription: prescription,
       );
-      await _db.updateAppointment(updatedAppointment);
+      await _firestore.updateAppointment(updatedAppointment);
       _appointments[index] = updatedAppointment;
       notifyListeners();
     }
@@ -122,6 +151,9 @@ class AppointmentProvider with ChangeNotifier {
 
   Future<void> loadSampleAppointments(List<Doctor> doctors) async {
     if (doctors.isEmpty) return;
+    
+    final userId = _userProvider?.currentUser?.id;
+    if (userId == null) return;
 
     final sampleAppointments = [
       Appointment(
@@ -185,9 +217,9 @@ class AppointmentProvider with ChangeNotifier {
       ),
     ];
 
-    // Insert all appointments into database
+    // Insert all appointments into Firestore
     for (final appointment in sampleAppointments) {
-      await _db.insertAppointment(appointment);
+      await _firestore.createAppointment(appointment, userId);
     }
     _appointments = sampleAppointments;
     notifyListeners();
